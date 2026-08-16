@@ -42,6 +42,110 @@ class AgentListOut(BaseModel):
 
 
 # --------------------------------------------------------------------------
+# Tools
+# --------------------------------------------------------------------------
+
+
+class ToolCreate(BaseModel):
+    name: str
+    description: str | None = None
+    input_schema: dict | None = None
+    output_schema: dict | None = None
+
+
+class ToolOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    name: str
+    description: str | None
+    input_schema: dict | None
+    output_schema: dict | None
+    created_at: datetime
+
+
+class ToolListOut(BaseModel):
+    items: list[ToolOut]
+    next_cursor: str | None = None
+
+
+# --------------------------------------------------------------------------
+# Policies
+# --------------------------------------------------------------------------
+
+
+class PolicyCreate(BaseModel):
+    name: str
+    rule: dict
+
+
+class PolicyPatch(BaseModel):
+    name: str | None = None
+    rule: dict | None = None
+
+
+class PolicyOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    name: str
+    rule: dict
+    created_by: uuid.UUID | None
+    created_at: datetime
+
+
+class PolicyListOut(BaseModel):
+    items: list[PolicyOut]
+    next_cursor: str | None = None
+
+
+# --------------------------------------------------------------------------
+# Knowledge bases / documents
+# --------------------------------------------------------------------------
+
+
+class KnowledgeBaseCreate(BaseModel):
+    name: str
+    source_type: str
+
+
+class KnowledgeBaseOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    name: str
+    source_type: str
+    status: str
+    created_at: datetime
+
+
+class KnowledgeBaseListOut(BaseModel):
+    items: list[KnowledgeBaseOut]
+    next_cursor: str | None = None
+
+
+class DocumentCreate(BaseModel):
+    source_uri: str
+    title: str | None = None
+    content: str
+
+
+class DocumentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    knowledge_base_id: uuid.UUID
+    source_uri: str
+    title: str | None
+    checksum: str
+    indexed_at: datetime | None
+    chunk_count: int | None
+
+
+# --------------------------------------------------------------------------
 # Validation
 # --------------------------------------------------------------------------
 

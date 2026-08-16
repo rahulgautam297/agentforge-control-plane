@@ -1,7 +1,7 @@
-"""SQLAlchemy models for all 20 AgentForge tables.
+"""SQLAlchemy models for all 22 AgentForge tables.
 
 Control-plane owns and migrates every table here (see alembic/versions/).
-The execution-platform service only ever reads/writes the 8
+The execution-platform service only ever reads/writes the 10
 execution-owned tables below (via a separately-scoped Postgres role with
 no DDL rights) and hand-maintains its own copy of those model shapes in
 agentforge-agent-execution-platform/src/agentforge_execution_platform/models.py
@@ -401,3 +401,27 @@ class EvalResult(Base):
     score: Mapped[float | None] = mapped_column(Numeric(9, 4), nullable=True)
     passed: Mapped[bool | None] = mapped_column(nullable=True)
     details: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+
+
+class MemoryEpisode(Base):
+    __tablename__ = "memory_episodes"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
+    agent_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("agents.id"), nullable=False)
+    execution_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("executions.id"), nullable=False)
+    content: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class MemoryFact(Base):
+    __tablename__ = "memory_facts"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("tenants.id"), nullable=False)
+    agent_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("agents.id"), nullable=False)
+    key: Mapped[str] = mapped_column(String(255), nullable=False)
+    value: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    __table_args__ = (UniqueConstraint("tenant_id", "agent_id", "key", name="uq_memory_facts_tenant_agent_key"),)

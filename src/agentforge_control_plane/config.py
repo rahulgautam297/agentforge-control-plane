@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     execution_role_password: str = "execution_dev_password"
     dev_bearer_token: str = "dev-local-token"
     cors_origins: str = "http://localhost:3000"
+    execution_plane_url: str = "http://execution-platform:8001/api/v1"
 
     # Deterministic Phase-1 auth-shim identities. Seeded as data by the
     # 0001_initial_schema migration.
