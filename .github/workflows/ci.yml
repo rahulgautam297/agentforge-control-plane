@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+          python-version: "3.12"
+
+      # Pulls agentforge-agent-schema from its pinned git tag (see
+      # pyproject.toml's [tool.uv.sources]) -- a public repo, no extra
+      # auth needed for actions/checkout's default token to reach it.
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: ruff check
+        run: uv run ruff check .
+
+      - name: ruff format --check
+        run: uv run ruff format --check .
+
+      # No pytest step: this repo has no tests yet -- see
+      # agentforge-docs/docs/architecture/14-outstanding-gaps.md's "Zero
+      # automated test coverage" entry. Add one here the day tests exist;
+      # a bare `uv run pytest` against zero test files exits nonzero
+      # (pytest's own "no tests collected" exit code 5) and would fail
+      # this job for no real reason until then.
+
+      - name: Build package
+        run: uv build
