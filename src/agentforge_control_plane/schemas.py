@@ -3,7 +3,6 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
-
 # --------------------------------------------------------------------------
 # Agents
 # --------------------------------------------------------------------------
@@ -143,6 +142,31 @@ class DocumentOut(BaseModel):
     checksum: str
     indexed_at: datetime | None
     chunk_count: int | None
+
+
+# --------------------------------------------------------------------------
+# Evaluation suites (Phase 12a -- definitions only; eval_runs/eval_results
+# are execution-plane-owned, see that service's own schemas.py)
+# --------------------------------------------------------------------------
+
+
+class EvaluationSuiteCreate(BaseModel):
+    name: str
+    yaml_source: str
+
+
+class EvaluationSuiteOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    tenant_id: uuid.UUID
+    name: str
+    config: dict
+    created_at: datetime
+
+
+class EvaluationSuiteListOut(BaseModel):
+    items: list[EvaluationSuiteOut]
 
 
 # --------------------------------------------------------------------------

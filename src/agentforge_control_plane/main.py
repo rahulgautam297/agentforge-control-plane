@@ -12,6 +12,7 @@ from agentforge_control_plane.routers import (
     agent_versions,
     agents,
     deployments,
+    evaluations,
     knowledge,
     policies,
     tools,
@@ -97,6 +98,7 @@ app.include_router(deployments.router, prefix=api_v1)
 app.include_router(tools.router, prefix=api_v1)
 app.include_router(policies.router, prefix=api_v1)
 app.include_router(knowledge.router, prefix=api_v1)
+app.include_router(evaluations.router, prefix=api_v1)
 
 
 @app.get("/healthz")
